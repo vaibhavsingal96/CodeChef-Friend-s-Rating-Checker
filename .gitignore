@@ -1,89 +1,72 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
 
-# C extensions
-*.so
+# coding: utf-8
 
-# Distribution / packaging
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
+# In[1]:
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+import bs4
+from bs4 import BeautifulSoup as BS
+import requests
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*,cover
-.hypothesis/
+# In[2]:
 
-# Translations
-*.mo
-*.pot
+class info():
+    def __init (self):
+        pass
+    def __init__(self, name, username, college, ratings):
+        self.longrating = ratings[0]
+        self.shortrating = ratings[1]
+        self.ltimeallratings = ratings[2]
+        self.name = name
+        self.username = username
+        self.college = college
 
-# Django stuff:
-*.log
-local_settings.py
 
-# Flask stuff:
-instance/
-.webassets-cache
+# In[3]:
 
-# Scrapy stuff:
-.scrapy
+listofusername = ['vaibhavccrox', 'shadycoder', 'yash_mittal', 'saragarwal']
+allinfo = []
 
-# Sphinx documentation
-docs/_build/
 
-# PyBuilder
-target/
+# In[4]:
 
-# IPython Notebook
-.ipynb_checkpoints
+for iz in listofusername:
+    url = 'https://www.codechef.com/users/' + iz
+    data = requests.get(url)
+    soup = BS(data.text,'html.parser')
+    na = soup.find_all('table')
+    name = (na[1].find_all('div'))[1].text
+    li = na[0].find_all('table')
+    useful = li[1]
+    td = useful.find_all('td')
+    username = td[1].text
+    cnt = td[5].text
+    college = td[13].text
+    useful = na[5].find_all('tr')
+    ratings = []
 
-# pyenv
-.python-version
+    for ix in range(1,len(useful)):
+        td = useful[ix].find_all('td')
+        text=td[2].text.encode('UTF-8')
+        text = str(text)
+        string = ''
+        for iy in text:
+            if iy>='0' and iy<='9':
+                string = string + iy
+            else:
+                break
+        ratings.append(string)
+    #OBJECT CREATION
+    allinfo.append(info(name,username, college,ratings))
 
-# celery beat schedule file
-celerybeat-schedule
 
-# dotenv
-.env
+# In[6]:
 
-# virtualenv
-venv/
-ENV/
-
-# Spyder project settings
-.spyderproject
-
-# Rope project settings
-.ropeproject
+print 'Name\t\t\tUsername\t\t\tLong Rating'
+counter = 0
+for ix in allinfo:
+    if counter is not 3:
+        print ix.name,'\t\t',ix.username,'\t\t\t',ix.longrating
+    else:
+        print ix.name,'\t',ix.username,'\t\t\t',ix.longrating
+    counter += 1
